@@ -214,13 +214,36 @@ void GameController::replayGame() {
 }
 
 void GameController::saveGameHistory() {
-    // Implement saving to file if needed
-    consoleView.displayMessage("Game history saving not implemented yet."); // Use View
+    std::ofstream outFile("data/game_history.txt"); // Open file to save game history
+    if (outFile.is_open()) {
+        for (const auto& move : moveHistory) {
+            outFile << move.first << " " << move.second << std::endl; // Save each move (row col)
+        }
+        outFile.close();
+        consoleView.displayMessage("Game history saved to data/game_history.txt");
+    } else {
+        consoleView.displayMessage("Error saving game history!");
+    }
 }
 
 void GameController::loadGameHistory() {
-    // Implement loading from file if needed
-    consoleView.displayMessage("Game history loading not implemented yet."); // Use View
+    moveHistory.clear(); // Clear any existing history before loading
+    std::ifstream inFile("data/game_history.txt"); // Open file to load game history
+    if (inFile.is_open()) {
+        int row, col;
+        int movesLoaded = 0;
+        while (inFile >> row >> col) {
+            moveHistory.push_back({row, col}); // Load moves from file
+            movesLoaded++;
+        }
+        inFile.close();
+        consoleView.displayMessage("Loaded " + std::to_string(movesLoaded) + " moves from data/game_history.txt");
+        if (moveHistory.empty()) {
+             consoleView.displayMessage("data/game_history.txt is empty. No game to replay.");
+        }
+    } else {
+        consoleView.displayMessage("No game history file found. Starting new replay.");
+    }
 }
 
 void GameController::showPlayerInformation() {
