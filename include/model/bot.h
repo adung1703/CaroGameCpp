@@ -18,6 +18,8 @@ private:
     pair<int, int> getEasyMove() const;
     pair<int, int> getNormalMove() const;
     pair<int, int> getHardMove() const;
+    int minimax(int depth, bool isMaximizing, int alpha, int beta) const;
+    int evaluateBoard(char botSymbol) const;
 
 public:
     Bot(const string &name, char symbol, Difficulty difficultyLevel = Difficulty::NORMAL);

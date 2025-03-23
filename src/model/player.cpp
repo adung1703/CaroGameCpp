@@ -1,5 +1,5 @@
 #include "include/model/player.h"
-#include "include/Utils/Utils.h"
+#include "include/utils/utils.h"
 #include <iostream>
 using namespace std;
 

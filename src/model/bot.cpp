@@ -94,94 +94,128 @@ pair<int, int> Bot::getNormalMove() const
     return getEasyMove();
 }
 
-int evaluateBoard(char botSymbol)
-{
+int Bot::evaluateBoard(char botSymbol) const {
     Board &board = *Board::getInstance();
-    if (board.checkAnyWin(botSymbol)) // Check win for Bot
-    {
-        return 10;
-    }
     char playerSymbol = (botSymbol == 'X') ? 'O' : 'X';
-    if (board.checkAnyWin(playerSymbol)) // Check win for Player
-    {
-        return -10;
-    }
-    if (board.isBoardFull())
-    {
-        return 0; // Draw
-    }
-    return 0; // Neutral state for now
-}
+    int score = 0;
 
-int minimax(int depth, bool isMaximizingPlayer, char botSymbol)
-{
-    Board &board = *Board::getInstance();
-    int score = evaluateBoard(botSymbol);
+    vector<pair<int, int>> directions = {{1, 0}, {0, 1}, {1, 1}, {1, -1}};
 
-    // Base cases
-    if (score == 10 || score == -10 || score == 0)
-    {
-        return score;
-    }
+    for (int row = 0; row < board.getBoardSize(); row++) {
+        for (int col = 0; col < board.getBoardSize(); col++) {
+            if (board.getCell(row, col) == botSymbol) {
+                for (auto [dRow, dCol] : directions) {
+                    int count = 1;
+                    int i = 1;
 
-    if (isMaximizingPlayer)
-    {
-        int bestScore = -numeric_limits<int>::infinity();
-        for (int row = 0; row < board.getBoardSize(); ++row)
-        {
-            for (int col = 0; col < board.getBoardSize(); ++col)
-            {
-                if (board.isValidMove(row, col))
-                {
-                    board.placeMove(row, col, botSymbol);
-                    bestScore = max(bestScore, minimax(depth + 1, false, botSymbol));
+                    while (i < 4) {
+                        int newRow = row + i * dRow;
+                        int newCol = col + i * dCol;
+                        if (newRow >= 0 && newRow < board.getBoardSize() &&
+                            newCol >= 0 && newCol < board.getBoardSize() &&
+                            board.getCell(newRow, newCol) == botSymbol) {
+                            count++;
+                        } else {
+                            break;
+                        }
+                        i++;
+                    }
+
+                    if (count == 4) score += 1000; // Thắng
+                    else if (count == 3) score += 100;
+                    else if (count == 2) score += 10;
+                }
+            } else if (board.getCell(row, col) == playerSymbol) {
+                for (auto [dRow, dCol] : directions) {
+                    int count = 1;
+                    int i = 1;
+
+                    while (i < 4) {
+                        int newRow = row + i * dRow;
+                        int newCol = col + i * dCol;
+                        if (newRow >= 0 && newRow < board.getBoardSize() &&
+                            newCol >= 0 && newCol < board.getBoardSize() &&
+                            board.getCell(newRow, newCol) == playerSymbol) {
+                            count++;
+                        } else {
+                            break;
+                        }
+                        i++;
+                    }
+
+                    if (count == 4) score -= 1000; // Đối thủ thắng
+                    else if (count == 3) score -= 100;
+                    else if (count == 2) score -= 10;
                 }
             }
         }
-        return bestScore;
     }
-    else
-    {
-        int bestScore = numeric_limits<int>::infinity();
-        char playerSymbol = (botSymbol == 'X') ? 'O' : 'X';
-        for (int row = 0; row < board.getBoardSize(); ++row)
-        {
-            for (int col = 0; col < board.getBoardSize(); ++col)
-            {
-                if (board.isValidMove(row, col))
-                {
-                    board.placeMove(row, col, playerSymbol);
-                    bestScore = min(bestScore, minimax(depth + 1, true, botSymbol));
-                }
-            }
-        }
-        return bestScore;
-    }
+
+    return score;
 }
 
-pair<int, int> Bot::getHardMove() const
-{
-    Board &board = *Board::getInstance();
-    int bestScore = -numeric_limits<int>::infinity();
-    pair<int, int> bestMove = make_pair(-1, -1);
+int Bot::minimax(int depth, bool isMaximizing, int alpha, int beta) const {
+    Board *board = Board::getInstance();
+    
+    if (depth == 0 || board->isBoardFull()) {
+        return evaluateBoard(this->getSymbol());
+    }
+
     char botSymbol = this->getSymbol();
+    char playerSymbol = (botSymbol == 'X') ? 'O' : 'X';
 
-    for (int row = 0; row < board.getBoardSize(); ++row)
-    {
-        for (int col = 0; col < board.getBoardSize(); ++col)
-        {
-            if (board.isValidMove(row, col))
-            {
-                board.placeMove(row, col, botSymbol);
-                int moveScore = minimax(0, false, botSymbol); // Start minimax from player's perspective
-                board.setCell(row, col, ' '); // Undo the move
-                if (moveScore > bestScore)
-                {
-                    bestScore = moveScore;
-                    bestMove = make_pair(row, col);
+    if (isMaximizing) { // Bot's turn
+        int maxEval = -10000;
+        for (int row = 0; row < board->getBoardSize(); row++) {
+            for (int col = 0; col < board->getBoardSize(); col++) {
+                if (board->isValidMove(row, col)) {
+                    board->placeMove(row, col, botSymbol);
+                    int eval = minimax(depth - 1, false, alpha, beta);
+                    board->setCell(row, col, ' '); // Undo move
+                    maxEval = max(maxEval, eval);
+                    alpha = max(alpha, eval);
+                    if (beta <= alpha) break; // Alpha-beta pruning
+                }
+            }
+        }
+        return maxEval;
+    } else { // Opponent's turn
+        int minEval = 10000;
+        for (int row = 0; row < board->getBoardSize(); row++) {
+            for (int col = 0; col < board->getBoardSize(); col++) {
+                if (board->isValidMove(row, col)) {
+                    board->placeMove(row, col, playerSymbol);
+                    int eval = minimax(depth - 1, true, alpha, beta);
+                    board->setCell(row, col, ' '); // Undo move
+                    minEval = min(minEval, eval);
+                    beta = min(beta, eval);
+                    if (beta <= alpha) break;
+                }
+            }
+        }
+        return minEval;
+    }
+}
+
+pair<int, int> Bot::getHardMove() const {
+    Board &board = *Board::getInstance();
+    int bestScore = -10000;
+    pair<int, int> bestMove = {-1, -1};
+
+    for (int row = 0; row < board.getBoardSize(); row++) {
+        for (int col = 0; col < board.getBoardSize(); col++) {
+            if (board.isValidMove(row, col)) {
+                board.placeMove(row, col, this->getSymbol());
+                int score = minimax(4, false, -10000, 10000);
+                board.setCell(row, col, ' '); // Undo move
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = {row, col};
                 }
             }
         }
     }
+
     return bestMove;
 }
