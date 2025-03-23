@@ -50,7 +50,7 @@ namespace Utils
         cout << "2. Play with BOT" << endl;
         cout << "3. Replay" << endl;
         cout << "4. Player's Information" << endl;
-        cout << "5. Guide" << endl;
+        cout << "5. Guild (Display All Players)" << endl;
         cout << "6. Exit" << endl;
         cout << "*-----------------------*" << endl;
     }

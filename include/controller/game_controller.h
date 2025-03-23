@@ -39,6 +39,7 @@ public:
     void loadGameHistory();
     void showPlayerInformation();
     void showGuildInformation();
+    void undoLastMove();
 
 private:
     void clearMoveHistory() { moveHistory.clear(); }

@@ -62,27 +62,32 @@ bool Board::placeMove(int row, int col, char playerSymbol)
 bool Board::checkLine(int row, int col, int dRow, int dCol, char playerSymbol) const
 {
     int count = 0;
+
+    // Check up to 3 positions in both directions
     for (int i = -3; i <= 3; ++i)
     {
         int checkRow = row + i * dRow;
         int checkCol = col + i * dCol;
+
         if (checkRow >= 0 && checkRow < boardSize &&
-            checkCol >= 0 && checkCol < boardSize &&
-            gameBoard[checkRow][checkCol] == playerSymbol)
+            checkCol >= 0 && checkCol < boardSize)
         {
-            count++;
-            if (count >= 4) return true; // 4 in a row found
-        }
-        else
-        {
-            count = 0; // Reset count if sequence is broken
+            if (gameBoard[checkRow][checkCol] == playerSymbol)
+            {
+                count++;
+                if (count >= 4) return true; // 4 in a row found
+            }
+            else
+            {
+                count = 0; // Reset count if sequence is broken
+            }
         }
     }
     return false;
 }
 
 /*
-Hàm kiểm tra xem bên cạnh vị trí hiện tại 
+Hàm kiểm tra xem bên cạnh vị trí hiện tại
 có 2 ô liên tiếp nước của đối phương và bot chưa chặn đầu nào
 Ví dụ mô phỏng: (Bot Symbol là O, Player Symbol là X)
 | | | | |
@@ -177,11 +182,11 @@ bool Board::checkThreat(int row, int col, char mySymbol) const
 
 bool Board::checkWin(int row, int col, char playerSymbol) const
 {
-    // Check all four directions: horizontal, vertical, diagonal 
+    // Check all four directions: horizontal, vertical, diagonal
     return checkLine(row, col, 1, 0, playerSymbol) || // Vertical
            checkLine(row, col, 0, 1, playerSymbol) || // Horizontal
-           checkLine(row, col, 1, 1, playerSymbol) || // Diagonal 
-           checkLine(row, col, 1, -1, playerSymbol);   // Diagonal 
+           checkLine(row, col, 1, 1, playerSymbol) || // Diagonal
+           checkLine(row, col, 1, -1, playerSymbol);  // Diagonal
 }
 
 bool Board::checkAnyWin(char playerSymbol) const
@@ -223,13 +228,13 @@ vector<vector<char>> Board::getGameBoard()
 }
 
 int Board::getBoardSize() const
-{ 
-    return boardSize; 
+{
+    return boardSize;
 };
 
 char Board::getCell(int row, int col) const
 {
-    if (row >= 0 && row < boardSize && 
+    if (row >= 0 && row < boardSize &&
         col >= 0 && col < boardSize)
     {
         return gameBoard[row][col];
@@ -239,7 +244,7 @@ char Board::getCell(int row, int col) const
 
 void Board::setCell(int row, int col, char symbol)
 {
-    if (row >= 0 && row < boardSize && 
+    if (row >= 0 && row < boardSize &&
         col >= 0 && col < boardSize)
     {
         gameBoard[row][col] = symbol;
