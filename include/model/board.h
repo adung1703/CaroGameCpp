@@ -2,6 +2,7 @@
 #define __BOARD__
 
 // Singleton class for the game Board
+#include "matches_history.h"
 #include <vector>
 using namespace std;
 
@@ -34,6 +35,7 @@ public:
     int getBoardSize() const;
     char getCell(int row, int col) const;
     void setCell(int row, int col, char symbol);
+    void replayMatch(const MatchRecord& match);
 };
 
 #endif

@@ -4,7 +4,10 @@
 #include <iostream>
 #include <limits>
 
-PlayerManager::PlayerManager() {}
+PlayerManager::PlayerManager() 
+{
+    players.resize(0); // Initialize players vector
+}
 
 PlayerManager::~PlayerManager()
 {
@@ -15,7 +18,7 @@ PlayerManager::~PlayerManager()
     players.clear();
 }
 
-void PlayerManager::loadPlayers(const string &filename)
+void PlayerManager::loadPlayers(const string filename)
 {
     ifstream inFile(filename);
     if (!inFile.is_open())
@@ -27,7 +30,7 @@ void PlayerManager::loadPlayers(const string &filename)
     string name;
     char symbol;
     int wins, losses, draws;
-
+    
     while (inFile >> name >> symbol >> wins >> losses >> draws)
     {
         Player *player = new Player(name, symbol); // Assuming Player constructor is suitable
@@ -37,7 +40,7 @@ void PlayerManager::loadPlayers(const string &filename)
     inFile.close();
 }
 
-void PlayerManager::savePlayers(const string &filename)
+void PlayerManager::savePlayers(const string filename)
 {
     ofstream outFile(filename);
     if (!outFile.is_open())
@@ -46,7 +49,7 @@ void PlayerManager::savePlayers(const string &filename)
         return; // Or throw exception
     }
 
-    for (const Player *player : players)
+    for (Player *player : players)
     {
         outFile << player->getName() << " " << player->getSymbol() << " "
                 << player->getWins() << " " << player->getLosses() << " " << player->getDraws() << endl;
@@ -57,6 +60,19 @@ void PlayerManager::savePlayers(const string &filename)
 void PlayerManager::addPlayer(Player *player)
 {
     players.push_back(player);
+}
+
+void PlayerManager::removePlayer(const string &name)
+{
+    for (vector<Player *>::iterator it = players.begin(); it != players.end(); ++it)
+    {
+        if ((*it)->getName() == name)
+        {
+            delete *it; 
+            players.erase(it);
+            return;
+        }
+    }
 }
 
 Player *PlayerManager::getPlayer(const string &name)

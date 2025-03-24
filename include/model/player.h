@@ -15,7 +15,7 @@ protected:
     int draws;
 
 public:
-    Player(const string &name, char symbol);
+    Player(const string &name, char playerSymbol = 'O', int wins = 0, int losses = 0, int draws = 0);
     virtual ~Player() = default;
 
     virtual pair<int, int> getMove();

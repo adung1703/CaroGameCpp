@@ -3,12 +3,12 @@
 #include <iostream>
 using namespace std;
 
-Player::Player(const string &name, char symbol) :
+Player::Player(const string &name, char playerSymbol, int wins, int losses, int draws) :
     playerName(name),
-    playerSymbol(symbol),
-    wins(0),
-    losses(0),
-    draws(0)
+    playerSymbol(playerSymbol),
+    wins(wins),
+    losses(losses),
+    draws(draws)
 {}
 
 pair<int, int> Player::getMove()

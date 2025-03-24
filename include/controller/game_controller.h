@@ -4,8 +4,9 @@
 #include "model/board.h"
 #include "model/player.h"
 #include "model/bot.h"
-#include "view/console_view.h"
 #include "model/player_manager.h"
+#include "model/matches_history.h"
+#include "view/console_view.h"
 #include <vector>
 #include <string>
 
@@ -18,9 +19,10 @@ private:
     Player* player2;
     Player* currentPlayer;
     bool gameRunning;
-    vector<pair<int, int>> moveHistory;
+    vector<pair<int, int>> currentMatchMoves; 
     CaroView::ConsoleView consoleView; // Controller uses the View
     PlayerManager playerManager; // Controller manages PlayerManager Model
+    MatchesHistory matchesHistory; // Controller manages MatchesHistory Model
 
 public:
     GameController();
@@ -29,21 +31,19 @@ public:
     void runGame(); // Main game loop controller
     void initializeGame();
     void startGame(); // Player vs Player game
-    void startBotGame(Player* humanPlayer, Bot* botPlayer);
+    void startBotGame(int botChoice);
     void handlePlayerTurn();
     void switchPlayer();
     bool checkGameOver(int lastMoveRow, int lastMoveCol);
     void displayGameResult();
     void replayGame();
-    void saveGameHistory();
-    void loadGameHistory();
     void showPlayerInformation();
     void showGuildInformation();
-    void undoLastMove();
+    // void undoLastMove();
 
 private:
-    void clearMoveHistory() { moveHistory.clear(); }
-    void addToMoveHistory(int row, int col) { moveHistory.push_back({row, col}); }
+    void clearMoves() { currentMatchMoves.clear(); }
+    void addMoves(int row, int col) { currentMatchMoves.push_back({row, col}); }
 };
 
 } // namespace CaroController

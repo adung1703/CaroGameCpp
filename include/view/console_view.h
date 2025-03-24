@@ -4,6 +4,7 @@
 
 #include "include/model/board.h"
 #include "include/model/player.h"
+#include "include/model/matches_history.h"
 using namespace std;
 
 namespace CaroView
@@ -18,6 +19,7 @@ namespace CaroView
         void displayPlayerInfo(const Player &player);
         void displayAllPlayersInfo(const vector<Player *> &players);
         void displayMessage(const string &message);
+        void displayMatchList(const vector<MatchRecord>& matches);
     };
 } // namespace CaroView
 

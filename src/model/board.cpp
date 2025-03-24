@@ -250,3 +250,22 @@ void Board::setCell(int row, int col, char symbol)
         gameBoard[row][col] = symbol;
     }
 }
+
+void Board::replayMatch(const MatchRecord &match)
+{
+    initBoard();
+
+    for (int i = 0; i < match.moves.size(); ++i)
+    {
+        cout << "Replaying Match: " << match.timestamp << " | "
+        << match.player1 << " vs " << match.player2 << endl;
+        Utils::clearScreen();
+        pair<int, int> move = match.moves[i];
+        placeMove(move.first, move.second, (i % 2 == 0) ? 'X' : 'O');
+        displayBoard();
+        cout << "Press Enter for next move...";
+        cin.get();
+    }
+
+    cout << "End of Replay." << endl;
+}
